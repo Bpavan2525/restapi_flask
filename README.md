@@ -48,7 +48,7 @@ Settings come from environment variables: `SHOP_WHATSAPP` (the shop's number wit
 ```
 shop_api/__init__.py      app factory, routes and validation
 shop_api/templates/       interactive docs page served at /
-api/index.py              Vercel serverless entry point
+app.py                    entry point (local and Vercel)
 tests/test_api.py         pytest suite
 notebooks/                Flask and REST concept notes
 ```
