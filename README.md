@@ -2,7 +2,7 @@
 
 A REST API for a local restaurant or shop, built with **Python and Flask**. Customers browse the menu and place orders; every order is validated, totalled, and returned with a **WhatsApp link** that sends it straight to the shop owner's phone. The owner can list orders and move them through `received → preparing → ready → delivered`.
 
-**Live demo:** LIVE_URL (open it and press the button to place a test order)
+**Live demo:** https://shop-orders-api.vercel.app (open it and press the button to place a test order)
 
 ## Features
 
@@ -27,7 +27,7 @@ A REST API for a local restaurant or shop, built with **Python and Flask**. Cust
 | PATCH | `/api/orders/<id>` | Change status (needs `X-API-Key`) |
 
 ```bash
-curl -X POST LIVE_URL/api/orders \
+curl -X POST https://shop-orders-api.vercel.app/api/orders \
   -H "Content-Type: application/json" \
   -d '{"customer_name":"Ravi","phone":"9876543210","items":[{"product_id":1,"qty":2}]}'
 ```
