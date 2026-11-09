@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop Orders API</title>
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--ink:#16181d;--muted:#5d6470;--line:#e3e5e8;--brand:#0f766e;--code:#f0f2f4}
+@media (prefers-color-scheme:dark){:root{--bg:#121417;--card:#1b1e23;--ink:#eceef1;--muted:#a3a9b3;--line:#2c3038;--brand:#2dd4bf;--code:#23272e}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:40px 16px 64px}
+h1{font-size:clamp(28px,5vw,40px);margin:0 0 8px}h2{margin:36px 0 12px;font-size:22px}
+p.lead{color:var(--muted);margin:0 0 20px;max-width:640px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:15px}td,th{text-align:left;padding:8px;border-bottom:1px solid var(--line)}
+code,pre{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--code);border-radius:6px}
+code{padding:1px 6px;font-size:14px}pre{padding:12px;overflow:auto;font-size:13px;max-height:340px;margin:10px 0 0}
+.m{font-weight:700;font-size:12px;padding:2px 6px;border-radius:4px;color:#fff}.GET{background:#2563eb}.POST{background:#16a34a}.PATCH{background:#d97706}
+button{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:10px 14px;font-weight:600;cursor:pointer}
+input,select{padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;width:100%}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:10px}
+a{color:var(--brand)}
+</style>
+</head>
+<body><div class="wrap">
+<h1>Shop Orders API</h1>
+<p class="lead">A REST API for a local restaurant or shop, built with Python and Flask. Customers browse the menu and place orders, and every order comes back with a WhatsApp link that sends it straight to the shop owner's phone.</p>
+
+<h2>Try it</h2>
+<div class="card">
+  <div class="row">
+    <input id="name" placeholder="Your name" value="Ravi">
+    <input id="phone" placeholder="Phone" value="9876543210">
+  </div>
+  <div class="row">
+    <select id="product">{% for p in products %}<option value="{{ p.id }}">{{ p.name }} (Rs {{ p.price }})</option>{% endfor %}</select>
+    <input id="qty" type="number" min="1" max="20" value="2">
+  </div>
+  <button id="send">POST /api/orders</button>
+  <pre id="out">The response will show here.</pre>
+</div>
+
+<h2>Endpoints</h2>
+<div class="card"><table>
+<tr><th>Method</th><th>Path</th><th>What it does</th></tr>
+<tr><td><span class="m GET">GET</span></td><td><code>/api/products</code></td><td>List products. Filter with <code>?category=mains</code></td></tr>
+<tr><td><span class="m GET">GET</span></td><td><code>/api/products/&lt;id&gt;</code></td><td>One product</td></tr>
+<tr><td><span class="m POST">POST</span></td><td><code>/api/orders</code></td><td>Place an order. Validates input, totals the bill, returns a WhatsApp link</td></tr>
+<tr><td><span class="m GET">GET</span></td><td><code>/api/orders/&lt;id&gt;</code></td><td>Track an order</td></tr>
+<tr><td><span class="m GET">GET</span></td><td><code>/api/orders</code></td><td>Shop owner: all orders (needs <code>X-API-Key</code>)</td></tr>
+<tr><td><span class="m PATCH">PATCH</span></td><td><code>/api/orders/&lt;id&gt;</code></td><td>Shop owner: move an order to preparing, ready, delivered or cancelled</td></tr>
+</table></div>
+
+<h2>Example</h2>
+<pre>curl -X POST {{ request.host_url }}api/orders \
+  -H "Content-Type: application/json" \
+  -d '{"customer_name":"Ravi","phone":"9876543210","items":[{"product_id":1,"qty":2}]}'</pre>
+<p style="color:var(--muted)">This demo keeps orders in memory, so they reset when the server restarts. Source and tests: <a href="https://github.com/Bpavan2525/restapi_flask">github.com/Bpavan2525/restapi_flask</a></p>
+</div>
+<script>
+document.getElementById("send").onclick = async () => {
+  const body = {customer_name: name.value, phone: phone.value,
+    items: [{product_id: Number(product.value), qty: Number(qty.value)}]};
+  const r = await fetch("/api/orders", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+  const data = await r.json();
+  out.textContent = "HTTP " + r.status + "\n" + JSON.stringify(data, null, 2);
+};
+</script>
+</body></html>
